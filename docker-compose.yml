@@ -1,0 +1,23 @@
+version: "3"
+
+services:
+  muzz-database:
+    image: postgres:10.6-alpine
+    volumes:
+      - ./.deployment/local:/docker-entrypoint-initdb.d
+    environment:
+      - POSTGRES_MULTIPLE_DATABASES=muzz_dev,muzz_test
+      - POSTGRES_USER=muzz
+      - POSTGRES_PASSWORD=muzz
+    ports:
+      - "5432:5432"
+
+  muzz-server:
+    build:
+      dockerfile: Dockerfile
+    ports:
+    - "8080:8080"
+    links:
+    - muzz-database
+    depends_on:
+    - muzz-database
